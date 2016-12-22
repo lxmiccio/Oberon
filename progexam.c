@@ -6,9 +6,9 @@
 
 #include "mylib.h"
 
-int main()
+int main(void)
 {
-	system("clear");
+    system("clear");
 
 	time_t t;
 	srand((unsigned) time(&t));
@@ -20,8 +20,7 @@ int main()
 		printf("**************************************************\n");
 		printf("[1] Crea percorso\n");
 		printf("[2] Muovi Oberon\n");
-		printf("[3] Termina gioco\n");
-		printf("\n");
+		printf("[3] Termina gioco\n\n");
 
 		printf("Scelta: ");
 
@@ -46,15 +45,13 @@ int main()
 				break;
 
 			default:
-				printf("Scelta non esistente\n");
-				printf("\n");
+				printf("Scelta non esistente\n\n");
 				break;
 		}		
 	}
 	while(!exit);
 
-	printf("Partita terminata\n");
-	printf("\n");
+	printf("Partita terminata\n\n");
 
 	return 0;
 }

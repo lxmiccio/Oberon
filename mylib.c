@@ -14,24 +14,24 @@ static bool pathCreated = false;
 
 static void initializeMonster(Monster_t* monster);
 
-static void ins_terra();
-static void canc_terra();
-static void stampa_percorso();
-static void chiudi_percorso();
+static void ins_terra(void);
+static void canc_terra(void);
+static void stampa_percorso(void);
+static void chiudi_percorso(void);
 
-static void avanza();
-static void prendi_tesoro();
-static void usa_pozione();
-static void combatti();
-static void distruggi_terra();
+static void avanza(void);
+static void prendi_tesoro(void);
+static void usa_pozione(void);
+static void combatti(void);
+static void distruggi_terra(void);
 
 static const char* areaTypes[] = { "Home", "Desert", "Forest", "Plain", "Swamp", "Village" };
-static const uint8_t areaTypesCount = 6;
+static const uint8_t areaTypesCount = 6U;
 
 static const char* monsterTypes[] = { "None", "Dragon", "Ogre", "Skeleton", "Wolf" };
-static const uint8_t monsterTypesCount = 4; // None is not a monster
+static const uint8_t monsterTypesCount = 4U; // None is not a monster
 
-void crea_percorso()
+void crea_percorso(void)
 {
 	pathCreated = false;
 	
@@ -40,8 +40,7 @@ void crea_percorso()
 		printf("[1] Add area\n");
 		printf("[2] Remove last area\n");
 		printf("[3] Print path\n");
-		printf("[4] Back to menu\n");
-		printf("\n");
+		printf("[4] Back to menu\n\n");
 		
 		printf("Scelta: ");
 		
@@ -52,71 +51,73 @@ void crea_percorso()
 		
 		switch(choice)
 		{
-			case 1:
+			case 1U:
 			ins_terra();
 			break;
 			
-			case 2:
+			case 2U:
 			canc_terra();
 			break;
 			
-			case 3:
+			case 3U:
 			stampa_percorso();
 			break;
 			
-			case 4:
+			case 4U:
 			chiudi_percorso();
 			break;
 			
 			default:
-			printf("Scelta non esistente\n");
-			printf("\n");
+			printf("Scelta non esistente\n\n");
 			break;
 		}
 		
 	} while(!pathCreated);
 }
 
-void initializeMonster(Monster_t* monster)
+static void initializeMonster(Monster_t* monster)
 {
 	switch(monster->type)
 	{
 		case NONE:
 		monster->name = "None";
-		monster->hp = 0;
-		monster->damages = 0;
+		monster->hp = 0U;
+		monster->damages = 0U;
 		break;
 		
 		case DRAGON:
 		monster->name = "Dragon";
-		monster->hp = 5;
-		monster->damages = 5;
+		monster->hp = 5U;
+		monster->damages = 5U;
 		break;
 		
 		case OGRE:
 		monster->name = "Ogre";
-		monster->hp = 3;
-		monster->damages = 3;
+		monster->hp = 3U;
+		monster->damages = 3U;
 		break;
 		
 		case SKELETON:
 		monster->name = "Skeleton";
-		monster->hp = 2;
-		monster->damages = 2;
+		monster->hp = 2U;
+		monster->damages = 2U;
 		break;
 		
 		case WOLF:
 		monster->name = "Wolf";
-		monster->hp = 1;
-		monster->damages = 1;
+		monster->hp = 1U;
+		monster->damages = 1U;
+		break;
+
+		default:
 		break;
 	}
 }
 
-void ins_terra()
+static void ins_terra(void)
 {
 	/* Allocate a new area */
-	Area_t* area = malloc(sizeof(Area_t));
+	Area_t* area = (Area_t*) malloc(sizeof(Area_t));
 	
 	/* Initialize next to NULL */
 	area->next = NULL;
@@ -125,15 +126,16 @@ void ins_terra()
 	while(true)
 	{
 		int16_t i;
-		for(i = 0; i < areaTypesCount; i++)
+		for(i = 0U; i < areaTypesCount; i++)
 		{
 			i < areaTypesCount - 1 ? printf("[%hu] %s\n", i, areaTypes[i]) : printf("[%hu] %s\n\n", i, areaTypes[i]);
 		}
-		
+
+        printf("Area type: ");
+
 		uint16_t choice;
-		
-		printf("Area type: ");
 		scanf("%hu", &choice);
+		
 		printf("\n");
 		
 		if(choice >= 0 && choice < areaTypesCount)
@@ -209,7 +211,7 @@ void ins_terra()
 	last = area;
 }
 
-void canc_terra()
+static void canc_terra(void)
 {
 	if(path == NULL || last == NULL)
 	{
@@ -242,7 +244,7 @@ void canc_terra()
 	}
 }
 
-void stampa_percorso()
+static void stampa_percorso(void)
 {
 	if(path == NULL)
 	{
@@ -256,20 +258,20 @@ void stampa_percorso()
 	do
 	{
 		printf("Area {%hu, %s, %s, %hu}\n", i++, areaTypes[temp->type], temp->monster.name, temp->gold);
-	}
-	while((temp = temp->next) != NULL);
 	
+	} while((temp = temp->next) != NULL);
+
 	printf("\n");
 }
 
-void chiudi_percorso()
+static void chiudi_percorso(void)
 {
 	pathCreated = true;
 }
 
 
 
-void muovi_Oberon()
+static void muovi_Oberon(void)
 {
 	/* Return if path hasn't been created */
 	if(!pathCreated)
@@ -304,23 +306,23 @@ void muovi_Oberon()
 		
 		switch(choice)
 		{
-			case 1:
+			case 1U:
 			avanza();
 			break;
 			
-			case 2:
+			case 2U:
 			prendi_tesoro();
 			break;
 			
-			case 3:
+			case 3U:
 			usa_pozione();
 			break;
 			
-			case 4:
+			case 4U:
 			combatti();
 			break;
 			
-			case 5:
+			case 5U:
 			distruggi_terra();
 			break;
 			
@@ -333,7 +335,7 @@ void muovi_Oberon()
 	while(oberon.hp > 0 && current != NULL);
 }
 
-void avanza()
+static void avanza(void)
 {
 	if(current == NULL)
 	{
@@ -352,38 +354,36 @@ void avanza()
 	current = current->next;
 }
 
-void prendi_tesoro()
+static void prendi_tesoro(void)
 {
-	if(current == NULL)
+	if(current != NULL)
 	{
-		return;
-	}
-	
-	/* Exit if a monster is present */
-	if(current->monster.hp > 0)
-	{
-		printf("You have to defeat the %s to gether the gold\n\n", current->monster.name);
-		
-		return;
-	}
-	
-	/* Add gold gathered */
-	oberon.gold += current->gold;
-	
-	/* Set gold to 500 if it is greater than maximum */
-	if(oberon.gold > 500)
-	{
-		oberon.gold = 500;
+	    /* Exit if a monster is present */
+	    if(current->monster.hp > 0)
+	    {
+	        /* Add gold gathered */
+	        oberon.gold += current->gold;
+
+	        /* Set gold to 500 if it is greater than maximum */
+	        if(oberon.gold > 500)
+	        {
+	            oberon.gold = 500;
+	        }
+	    }
+	    else
+	    {
+            printf("You have to defeat the %s to gether the gold\n\n", current->monster.name);
+	    }
 	}
 }
 
-void usa_pozione()
+static void usa_pozione(void)
 {
 	/* Use potion only if available */
 	if(oberon.potions > 0)
 	{
 		oberon.potions--;
-		oberon.hp += 5;
+		oberon.hp += 5U;
 		
 		printf("Healing potion used (%d left)\n", oberon.potions);
 		printf("Now Oberon has %d hp\n\n", oberon.hp);
@@ -394,7 +394,7 @@ void usa_pozione()
 	}
 }
 
-void combatti()
+static void combatti(void)
 {
 	if(current == NULL)
 	{
@@ -498,7 +498,7 @@ void combatti()
 	}
 }
 
-void distruggi_terra()
+static void distruggi_terra(void)
 {
 	/* Return if oberon has already destroyed an area */
 	if(oberon.hasDestroyedArea)
@@ -526,23 +526,21 @@ void distruggi_terra()
 }
 
 
-void termina_gioco()
+static void termina_gioco(void)
 {
-	if(path == NULL)
+	if(path != NULL)
 	{
-		return;
+	    /* Loop through the path and deallocate all the areas */
+	    while(path->next != NULL)
+	    {
+	        Area_t* temp = path;
+
+	        path = path->next;
+
+	        free(temp);
+	    }
+
+	    path = NULL;
 	}
-	
-	/* Loop through the path and deallocate all the areas */
-	while(path->next != NULL)
-	{
-		Area_t* temp = path;
-		
-		path = path->next;
-		
-		free(temp);
-	}
-	
-	path = NULL;
 }
 
