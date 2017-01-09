@@ -39,3 +39,33 @@ typedef struct Oberon {
 	bool hasDestroyedArea;
 } Oberon_t;
 
+void crea_percorso();
+void muovi_oberon();
+void termina_gioco();
+
+
+
+/* Additional */
+
+typedef enum {
+	DEFAULT = 0,
+	BLUE,
+	CYANO,
+	GREEN,
+	MAGENTA,
+	RED,
+	WHITE,
+	YELLOW
+} Color_t;
+
+typedef struct SerializableArea {
+	AreaType_t areaType;
+	MonsterType_t monsterType;
+	uint16_t gold;
+} SerializableArea_t;
+
+void renameFile();
+void loadFile();
+void setColor(Color_t color);
+
+

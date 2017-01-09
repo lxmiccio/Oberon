@@ -8,8 +8,6 @@
 
 int main(void)
 {
-    system("clear");
-
 	time_t t;
 	srand((unsigned) time(&t));
 
@@ -17,10 +15,16 @@ int main(void)
 
 	do
 	{
+		setColor(CYANO);
+
 		printf("**************************************************\n");
 		printf("[1] Crea percorso\n");
 		printf("[2] Muovi Oberon\n");
-		printf("[3] Termina gioco\n\n");
+		printf("[3] Termina gioco\n");
+		printf("[4] Salva percorso\n");
+		printf("[5] Carica percorso\n\n");
+
+		setColor(DEFAULT);
 
 		printf("Scelta: ");
 
@@ -36,7 +40,7 @@ int main(void)
 				break;
 
 			case 2:
-				muovi_Oberon();
+				muovi_oberon();
 				break;
 
 			case 3:
@@ -44,12 +48,22 @@ int main(void)
 				exit = true;
 				break;
 
-			default:
-				printf("Scelta non esistente\n\n");
+			case 4:
+				renameFile();
 				break;
-		}		
-	}
-	while(!exit);
+
+			case 5:
+				loadFile();
+				break;
+
+			default:
+				/* Clear stdin */
+				while(getchar() != '\n');
+
+				break;
+		}
+
+	} while(!exit);
 
 	printf("Partita terminata\n\n");
 

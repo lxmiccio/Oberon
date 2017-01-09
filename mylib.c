@@ -29,18 +29,22 @@ static const char* areaTypes[] = { "Home", "Desert", "Forest", "Plain", "Swamp",
 static const uint8_t areaTypesCount = 6U;
 
 static const char* monsterTypes[] = { "None", "Dragon", "Ogre", "Skeleton", "Wolf" };
-static const uint8_t monsterTypesCount = 4U; // None is not a monster
+static const uint8_t monsterTypesCount = 4U; /* None is not a monster */
 
 void crea_percorso(void)
 {
 	pathCreated = false;
 	
 	do {
+		setColor(CYANO);
+
 		printf("**************************************************\n");
-		printf("[1] Add area\n");
-		printf("[2] Remove last area\n");
-		printf("[3] Print path\n");
-		printf("[4] Back to menu\n\n");
+		printf("[1] Inserisci nuova terra\n");
+		printf("[2] Rimuovi ultima terra\n");
+		printf("[3] Stampa percorso\n");
+		printf("[4] Torna al menu\n\n");
+
+		setColor(DEFAULT);
 		
 		printf("Scelta: ");
 		
@@ -52,26 +56,27 @@ void crea_percorso(void)
 		switch(choice)
 		{
 			case 1U:
-			ins_terra();
-			break;
-			
+				ins_terra();
+				break;
+
 			case 2U:
-			canc_terra();
-			break;
-			
+				canc_terra();
+				break;
+
 			case 3U:
-			stampa_percorso();
-			break;
-			
+				stampa_percorso();
+				break;
+
 			case 4U:
-			chiudi_percorso();
-			break;
-			
+				savePath();
+				chiudi_percorso();
+				break;
+
 			default:
-			printf("Scelta non esistente\n\n");
-			break;
+				while(getchar() != '\n');
+				break;
 		}
-		
+
 	} while(!pathCreated);
 }
 
@@ -80,37 +85,37 @@ static void initializeMonster(Monster_t* monster)
 	switch(monster->type)
 	{
 		case NONE:
-		monster->name = "None";
-		monster->hp = 0U;
-		monster->damages = 0U;
-		break;
+			monster->name = "None";
+			monster->hp = 0U;
+			monster->damages = 0U;
+			break;
 		
 		case DRAGON:
-		monster->name = "Dragon";
-		monster->hp = 5U;
-		monster->damages = 5U;
-		break;
+			monster->name = "Dragon";
+			monster->hp = 5U;
+			monster->damages = 5U;
+			break;
 		
 		case OGRE:
-		monster->name = "Ogre";
-		monster->hp = 3U;
-		monster->damages = 3U;
-		break;
+			monster->name = "Ogre";
+			monster->hp = 3U;
+			monster->damages = 3U;
+			break;
 		
 		case SKELETON:
-		monster->name = "Skeleton";
-		monster->hp = 2U;
-		monster->damages = 2U;
-		break;
+			monster->name = "Skeleton";
+			monster->hp = 2U;
+			monster->damages = 2U;
+			break;
 		
 		case WOLF:
-		monster->name = "Wolf";
-		monster->hp = 1U;
-		monster->damages = 1U;
-		break;
+			monster->name = "Wolf";
+			monster->hp = 1U;
+			monster->damages = 1U;
+			break;
 
 		default:
-		break;
+			break;
 	}
 }
 
@@ -126,21 +131,17 @@ static void ins_terra(void)
 	while(true)
 	{
 		int16_t i;
-		for(i = 0U; i < areaTypesCount; i++)
+		for(i = 0; i < areaTypesCount; i++)
 		{
 			i < areaTypesCount - 1 ? printf("[%hu] %s\n", i, areaTypes[i]) : printf("[%hu] %s\n\n", i, areaTypes[i]);
 		}
 
-        printf("Area type: ");
-
-		uint16_t choice;
-		scanf("%hu", &choice);
-		
+        	printf("Area type: ");
+		scanf("%d", &(area)->type);
 		printf("\n");
 		
-		if(choice >= 0 && choice < areaTypesCount)
+		if(area->type >= 0 && area->type < areaTypesCount)
 		{
-			area->type = choice;
 			break;
 		}
 	}
@@ -149,33 +150,27 @@ static void ins_terra(void)
 	while(true)
 	{
 		int16_t i;
-		for(i = -1; i < monsterTypesCount; i++)
+		for(i = 0; i <= monsterTypesCount; i++)
 		{
-			i < monsterTypesCount - 1 ? printf("[%hu] %s\n", i + 1, monsterTypes[i + 1]) : printf("[%hu] %s\n\n", i + 1, monsterTypes[i + 1]);
+			i <= monsterTypesCount - 1 ? printf("[%hu] %s\n", i, monsterTypes[i]) : printf("[%hu] %s\n\n", i, monsterTypes[i]);
 		}
-		
-		int16_t choice;
 		
 		printf("Monster type: ");
-		scanf("%hu", &choice);
+		scanf("%d", &(area)->monster.type);
 		printf("\n");
-		
-		// Decrease choise because MonsterType_t starts from -1, not 0
-		choice--;
 
-		bool exit = true;
+		area->monster.type--;
 
-		if(((path == NULL || area->type == HOME || area->type == VILLAGE) && choice != NONE)
-			|| (area->type == SWAMP && choice == SKELETON)
-			|| (area->type == DESERT && choice == OGRE)
-			|| (choice == WOLF && area->type != FOREST && area->type != PLAIN))
+		if(((path == NULL || area->type == HOME || area->type == VILLAGE) && area->monster.type != NONE)
+			|| (area->type == SWAMP && area->monster.type == SKELETON)
+			|| (area->type == DESERT && area->monster.type == OGRE)
+			|| (area->monster.type == WOLF && area->type != FOREST && area->type != PLAIN)
+			|| (area->monster.type > monsterTypesCount))
 		{
-			exit = false;
+			/* Invalid choice */
 		}
-
-		if(exit)
+		else
 		{
-			area->monster.type = choice;
 			initializeMonster(&(area)->monster);
 
 			break;
@@ -189,7 +184,8 @@ static void ins_terra(void)
 		scanf("%hu", &(area)->gold);
 		printf("\n");
 		
-		if(area->gold <= 10)
+		if(area->type != VILLAGE || (area->type == VILLAGE && area->gold <= 10))
+
 		{
 			break;
 		}
@@ -213,55 +209,50 @@ static void ins_terra(void)
 
 static void canc_terra(void)
 {
-	if(path == NULL || last == NULL)
+	if(path != NULL && last != NULL)
 	{
-		return;
-	}
-	
-	/* Set path and last to NULL if the first area has been deleted */
-	if(path == last)
-	{
-		free(path);
-		
-		path = NULL;
-		last = NULL;
-	}
-	else
-	{
-		Area_t* temp = path;
-		
-		/* Loop through the path */
-		while(temp->next != last)
+		/* Set path and last to NULL if the first area has been deleted */
+		if(path == last)
 		{
-			temp = temp->next;
+			free(path);
+
+			last = NULL;
+			path = NULL;
 		}
+		else
+		{
+			Area_t* temp = path;
 		
-		free(last);
+			/* Loop through the path */
+			while(temp->next != last)
+			{
+				temp = temp->next;
+			}
 		
-		/* Update the last area */
-		last = temp;
-		last->next = NULL;
+			free(last);
+		
+			/* Update the last area */
+			last = temp;
+			last->next = NULL;
+		}
 	}
 }
 
 static void stampa_percorso(void)
 {
-	if(path == NULL)
+	if(path != NULL)
 	{
-		return;
-	}
+		Area_t* temp = path;
 	
-	Area_t* temp = path;
+		int16_t i = 0;
 	
-	int16_t i = 0;
-	
-	do
-	{
-		printf("Area {%hu, %s, %s, %hu}\n", i++, areaTypes[temp->type], temp->monster.name, temp->gold);
-	
-	} while((temp = temp->next) != NULL);
+		do {
+			printf("Area {%hu, %s, %s, %hu}\n", i++, areaTypes[temp->type], temp->monster.name, temp->gold);
 
-	printf("\n");
+		} while((temp = temp->next) != NULL);
+
+		printf("\n");
+	}
 }
 
 static void chiudi_percorso(void)
@@ -271,7 +262,7 @@ static void chiudi_percorso(void)
 
 
 
-static void muovi_Oberon(void)
+void muovi_oberon(void)
 {
 	/* Return if path hasn't been created */
 	if(!pathCreated)
@@ -291,12 +282,16 @@ static void muovi_Oberon(void)
 	
 	do
 	{
+		setColor(CYANO);
+
 		printf("**************************************************\n");
 		printf("[1] Move forward\n");
-		printf("[2] Gather gold (%hu left)\n", oberon.gold);
+		printf("[2] Gather gold (%hu left)\n", current->gold);
 		printf("[3] Use healing potion (%hu left)\n", oberon.potions);
 		printf("[4] Fight %s (%hu hp left)\n", current->monster.name, oberon.hp);
 		printf("[5] Destroy next area\n\n");
+
+		setColor(DEFAULT);
 		
 		uint16_t choice;
 		
@@ -327,7 +322,7 @@ static void muovi_Oberon(void)
 			break;
 			
 			default:
-			printf("Invalid choice\n\n");
+				while(getchar() != '\n');
 			break;
 		}
 		
@@ -491,7 +486,7 @@ static void combatti(void)
 			break;
 			
 			default:
-			printf("Invalid choice\n\n");
+				while(getchar() != '\n');
 			break;
 		}
 		
@@ -526,7 +521,7 @@ static void distruggi_terra(void)
 }
 
 
-static void termina_gioco(void)
+void termina_gioco(void)
 {
 	if(path != NULL)
 	{
@@ -542,5 +537,131 @@ static void termina_gioco(void)
 
 	    path = NULL;
 	}
+}
+
+void savePath()
+{
+	if(path != NULL)
+	{
+		FILE* file = fopen("temp.sav", "wb");
+
+		if(file != NULL)
+		{
+			Area_t* temp = path;
+	
+			do {
+				SerializableArea_t serializable;
+				serializable.areaType = temp->type;
+				serializable.monsterType = temp->monster.type;
+				serializable.gold = temp->gold;
+
+				fwrite(&serializable, sizeof(SerializableArea_t), 1, file);
+			
+			} while((temp = temp->next) != NULL);
+
+			fclose(file);
+		}
+	}
+}
+
+void renameFile()
+{
+	char filename[256];
+
+	printf("Filename: ");
+	scanf("%s", filename);
+	printf("\n");
+
+	rename("temp.sav", filename);
+}
+
+void loadFile()
+{
+	char filename[256];
+
+	printf("Filename: ");
+	scanf("%s", filename);
+	printf("\n");
+
+	FILE* file = fopen(filename, "rb");
+
+	if(file != NULL)
+	{
+		while(true)
+		{
+			SerializableArea_t* serializable = (SerializableArea_t*) malloc(sizeof(SerializableArea_t));
+
+	    		Area_t* area = (Area_t*) malloc(sizeof(Area_t));
+			area->next = NULL;
+			
+			int16_t res = fread(serializable, sizeof(SerializableArea_t), 1, file);
+
+			if(res != 1)
+			{
+				break;
+			}
+
+			area->type = serializable->areaType;
+			area->monster.type = serializable->monsterType;
+			initializeMonster(&(area)->monster);
+			area->gold = serializable->gold;
+
+			/* Update path if the area read is the first */
+			if(path == NULL)
+			{
+				path = area;
+			}
+	
+			/* Update next of the last area to the new one */
+			if(last != NULL)
+			{
+				last->next = area;
+			}
+	
+			/* Update last to the new area */
+			last = area;
+		}
+
+		fclose(file);
+	}
+
+}
+
+void setColor(Color_t color)
+{
+	char* code;
+
+	switch(color)
+	{
+		case DEFAULT:
+			code = "\x1B[0m";
+			break;
+		case BLUE:
+			code = "\x1B[34m";
+			break;
+		case CYANO:
+			code = "\x1B[36m";
+			break;
+		case GREEN:
+			code = "\x1B[32m";
+			break;
+		case MAGENTA:
+			code = "\x1B[35m";
+			break;
+		case RED:
+			code = "\x1B[31m";
+			break;
+		case WHITE:
+			code = "\x1B[37m";
+			break;
+		case YELLOW:
+			code = "\x1B[33m";
+			break;
+		default:
+			code = "\x1B[0m";
+			break;
+	}
+
+	printf("%s", code);
 }
 
