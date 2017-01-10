@@ -288,7 +288,14 @@ void muovi_oberon(void)
 		printf("[1] Move forward\n");
 		printf("[2] Gather gold (%hu left)\n", current->gold);
 		printf("[3] Use healing potion (%hu left)\n", oberon.potions);
-		printf("[4] Fight %s (%hu hp left)\n", current->monster.name, oberon.hp);
+		if(current->monster.type == NONE)
+		{
+			printf("[4] No monster to fight\n", current->monster.name);
+		}
+		else
+		{
+			printf("[4] Fight %s (%hu hp left)\n", current->monster.name, current->monster.hp);
+		}
 		printf("[5] Destroy next area\n\n");
 
 		setColor(DEFAULT);
@@ -328,6 +335,8 @@ void muovi_oberon(void)
 		
 	}
 	while(oberon.hp > 0 && current != NULL);
+
+	termina_gioco();
 }
 
 static void avanza(void)
@@ -336,15 +345,15 @@ static void avanza(void)
 	{
 		return;
 	}
-	
+
 	/* Exit if a monster is present */
 	if(current->monster.type == DRAGON && current->monster.hp > 0)
 	{
 		printf("You have to defeat the %s to move forward\n\n", current->monster.name);
-		
+
 		return;
 	}
-	
+
 	/* Move forward */
 	current = current->next;
 }
@@ -354,7 +363,7 @@ static void prendi_tesoro(void)
 	if(current != NULL)
 	{
 	    /* Exit if a monster is present */
-	    if(current->monster.hp > 0)
+	    if(current->monster.hp <= 0)
 	    {
 	        /* Add gold gathered */
 	        oberon.gold += current->gold;
@@ -364,10 +373,12 @@ static void prendi_tesoro(void)
 	        {
 	            oberon.gold = 500;
 	        }
+
+		current->gold = 0;
 	    }
 	    else
 	    {
-            printf("You have to defeat the %s to gether the gold\n\n", current->monster.name);
+            	printf("You have to defeat the %s to gether the gold\n\n", current->monster.name);
 	    }
 	}
 }
@@ -400,15 +411,19 @@ static void combatti(void)
 	if(current->monster.type < 0 || current->monster.type >= monsterTypesCount)
 	{
 		printf("No monsters in this area\n\n");
-		
+
 		return;
 	}
-	
+
 	while(oberon.hp > 0 && current->monster.hp > 0)
 	{
+		setColor(CYANO);
+
 		printf("**************************************************\n");
 		printf("[1] Attack\n");
 		printf("[2] Cast Spell (%hu left)\n\n", oberon.spells);
+
+		setColor(DEFAULT);
 		
 		uint16_t choice;
 		
@@ -423,14 +438,17 @@ static void combatti(void)
 			if(rand() % 100 >= 60)
 			{
 				printf("Oberon attacks\n");
-				
+
 				current->monster.hp -= 3;
 				
 				/* Monster is death */
 				if(current->monster.hp <= 0)
 				{
+					current->monster.hp = 0;
+					current->monster.type = NONE;
+
 					printf("%s has been defeated\n\n", current->monster.name);
-					
+
 					break;
 				}
 			}
@@ -445,15 +463,15 @@ static void combatti(void)
 			if(rand() % 100 >= 50)
 			{
 				printf("%s attacks\n", current->monster.name);
-				
+
 				oberon.hp -= current->monster.damages;
 				
 				/* Oberon is death */
 				if(oberon.hp <= 0)
 				{
-					printf("Oberon has been defeated\n");
-					printf("\n");
-					
+					oberon.hp = 0;
+					printf("Oberon has been defeated\n\n");
+
 					break;
 				}
 			}
@@ -462,8 +480,7 @@ static void combatti(void)
 				printf("Monster fails\n");
 			}
 			
-			printf("Oberon has %hu hp left\n", oberon.hp);
-			printf("\n");
+			printf("Oberon has %hu hp left\n\n", oberon.hp);
 			
 			break;
 			
@@ -477,6 +494,7 @@ static void combatti(void)
 				printf("%s has been defeated\n\n", current->monster.name);
 				
 				current->monster.hp = 0;
+				current->monster.type = NONE;
 			}
 			else
 			{
@@ -502,19 +520,19 @@ static void distruggi_terra(void)
 		
 		return;
 	}
-	
+
 	/* Destroy the next area only if it exists */
 	if(current->next != NULL)
 	{
 		printf("Oberon has destroyed the next area\n\n");
-		
+
 		oberon.hasDestroyedArea = true;
-		
+
 		Area_t* temp = current->next;
-		
+
 		/* Link the current area to the next one */
 		current->next = temp->next;
-		
+
 		/* Deallocate the destroyed area */
 		free(temp);
 	}
@@ -537,6 +555,8 @@ void termina_gioco(void)
 
 	    path = NULL;
 	}
+
+	exit(0);
 }
 
 void savePath()
@@ -548,7 +568,7 @@ void savePath()
 		if(file != NULL)
 		{
 			Area_t* temp = path;
-	
+
 			do {
 				SerializableArea_t serializable;
 				serializable.areaType = temp->type;
@@ -556,7 +576,7 @@ void savePath()
 				serializable.gold = temp->gold;
 
 				fwrite(&serializable, sizeof(SerializableArea_t), 1, file);
-			
+
 			} while((temp = temp->next) != NULL);
 
 			fclose(file);
@@ -604,20 +624,24 @@ void loadFile()
 			area->type = serializable->areaType;
 			area->monster.type = serializable->monsterType;
 			initializeMonster(&(area)->monster);
+
 			area->gold = serializable->gold;
 
 			/* Update path if the area read is the first */
 			if(path == NULL)
 			{
 				path = area;
+
+				/* Set pathCreated to true if at least an area has been read */
+				chiudi_percorso();
 			}
-	
+
 			/* Update next of the last area to the new one */
 			if(last != NULL)
 			{
 				last->next = area;
 			}
-	
+
 			/* Update last to the new area */
 			last = area;
 		}

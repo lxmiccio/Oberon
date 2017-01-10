@@ -18,19 +18,18 @@ int main(void)
 		setColor(CYANO);
 
 		printf("**************************************************\n");
-		printf("[1] Crea percorso\n");
-		printf("[2] Muovi Oberon\n");
-		printf("[3] Termina gioco\n");
-		printf("[4] Salva percorso\n");
-		printf("[5] Carica percorso\n\n");
+		printf("[1] Create path\n");
+		printf("[2] Move oberon\n");
+		printf("[3] End game\n");
+		printf("[4] Save path\n");
+		printf("[5] Load path\n\n");
 
 		setColor(DEFAULT);
 
-		printf("Scelta: ");
-
 		uint16_t choice;
-		scanf("%hu", &choice);
 
+		printf("Scelta: ");
+		scanf("%hu", &choice);
 		printf("\n");
 
 		switch(choice)
@@ -59,7 +58,6 @@ int main(void)
 			default:
 				/* Clear stdin */
 				while(getchar() != '\n');
-
 				break;
 		}
 

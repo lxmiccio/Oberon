@@ -20,7 +20,7 @@ typedef enum AreaType {
 typedef struct Monster {
 	MonsterType_t type;
 	const char* name;
-	uint16_t hp;
+	int16_t hp;
 	uint16_t damages;
 } Monster_t;
 
@@ -32,7 +32,7 @@ typedef struct Area {
 } Area_t;
 
 typedef struct Oberon {
-	uint16_t hp;
+	int16_t hp;
 	uint16_t spells;
 	uint16_t potions;
 	uint16_t gold;
