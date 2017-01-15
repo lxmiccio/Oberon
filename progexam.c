@@ -8,62 +8,51 @@
 
 int main(void)
 {
-	time_t t;
-	srand((unsigned) time(&t));
+    time_t t;
+    srand((unsigned) time(&t));
 
-	bool exit = false;
+    bool exit = false;
 
-	do
-	{
-		setColor(CYANO);
+    while(!exit)
+    {
+        puts("**************************************************");
+        puts("[1] Create path");
+        puts("[2] Move oberon");
+        puts("[3] End game");
+        puts("[4] Save path");
+        puts("[5] Load path\n");
 
-		printf("**************************************************\n");
-		printf("[1] Create path\n");
-		printf("[2] Move oberon\n");
-		printf("[3] End game\n");
-		printf("[4] Save path\n");
-		printf("[5] Load path\n\n");
+        switch(scanfWrap("Choice: ", 1, 5))
+        {
+        case 1:
+            crea_percorso();
+            break;
 
-		setColor(DEFAULT);
+        case 2:
+            muovi_oberon();
+            termina_gioco();
+            exit = true;
+            break;
 
-		uint16_t choice;
+        case 3:
+            termina_gioco();
+            exit = true;
+            break;
 
-		printf("Scelta: ");
-		scanf("%hu", &choice);
-		printf("\n");
+        case 4:
+            renameFile();
+            break;
 
-		switch(choice)
-		{
-			case 1:
-				crea_percorso();
-				break;
+        case 5:
+            loadFile();
+            break;
 
-			case 2:
-				muovi_oberon();
-				break;
+        default:
+            break;
+        }
+    }
 
-			case 3:
-				termina_gioco();
-				exit = true;
-				break;
+    puts("Game ended\n");
 
-			case 4:
-				renameFile();
-				break;
-
-			case 5:
-				loadFile();
-				break;
-
-			default:
-				/* Clear stdin */
-				while(getchar() != '\n');
-				break;
-		}
-
-	} while(!exit);
-
-	printf("Partita terminata\n\n");
-
-	return 0;
+    return 0;
 }
