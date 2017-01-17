@@ -167,7 +167,7 @@ static void stampa_percorso(void)
 
         for(int16_t i = 0; temp != NULL; i++, temp = temp->next)
         {
-            printf("Area {%hu, %s, %s, %hu}\n", i, areaTypes[temp->type], areaTypes[temp->monster.type], temp->gold);
+            printf("Area {%hu, %s, %s, %hu}\n", i, areaTypes[temp->type], monsterTypes[temp->monster.type], temp->gold);
         }
         printf("\n");
     }
@@ -183,7 +183,6 @@ static void chiudi_percorso(void)
 
 void muovi_oberon(void)
 {
-    stampa_percorso();
     if(pathCreated)
     {
         /* Initialize oberon */
@@ -282,7 +281,7 @@ static void usa_pozione(void)
     /* Use potion only if available */
     if(oberon.potions > 0)
     {
-        oberon.hp += 5U;
+        oberon.hp = 5U;
         oberon.potions--;
 
         printf("Healing potion used (%d left)\n", oberon.potions);
