@@ -416,6 +416,10 @@ static void distruggi_terra(void)
 
 void termina_gioco(void)
 {
+    puts("**************************************************");
+    puts("*****               Game ended               *****");
+    puts("**************************************************\n");
+
     if(path != NULL)
     {
         /* Loop through the path and deallocate all the areas */
@@ -427,10 +431,10 @@ void termina_gioco(void)
         }
 
         path = NULL;
-
-        /* Remove temporary file */
-        remove("temp.sav");
     }
+
+    /* Remove temporary file */
+    remove("temp.sav");
 }
 
 

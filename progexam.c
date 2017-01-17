@@ -30,8 +30,6 @@ int main(void)
 
         case 2:
             muovi_oberon();
-            termina_gioco();
-            exit = true;
             break;
 
         case 3:
