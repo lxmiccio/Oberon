@@ -427,6 +427,9 @@ void termina_gioco(void)
         }
 
         path = NULL;
+
+        /* Remove temporary file */
+        remove("temp.sav");
     }
 }
 
